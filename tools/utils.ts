@@ -73,3 +73,20 @@ export const send = async (id: number, message: string, inlineKeyboard?: InlineK
     console.log(new Date(), error);
   }
 };
+
+export const getAccountName = async (account, short?: boolean) => {
+  var accountInfo = await botParams.api.derive.accounts.info(account);
+  if (accountInfo.identity.displayParent || accountInfo.identity.display) {
+    var value = "";
+    if (accountInfo.identity.displayParent) {
+      value += accountInfo.identity.displayParent + ":";
+    }
+    if (accountInfo.identity.display) {
+      value += accountInfo.identity.display;
+    }
+    return value;
+  } else if (accountInfo.accountIndex) {
+    return accountInfo.accountIndex;
+  }
+  return short ? account.substring(0, 6) + "..." + account.substring(account.length - 6) : account;
+};

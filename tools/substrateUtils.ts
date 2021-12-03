@@ -4,9 +4,9 @@ import { SubmittableExtrinsic } from "@polkadot/api/types";
 import { ISubmittableResult } from "@polkadot/types/types";
 import { botParams } from "../config.js";
 import { bigNumberArithmetic, bigNumberComparison } from "./utils.js";
-import { IUser } from "../src/models/user.js";
 import { ApiPromise, WsProvider } from "@polkadot/api";
 import { cryptoWaitReady } from "@polkadot/util-crypto";
+import { Block } from "@polkadot/types/interfaces";
 
 export const getApi = async (): Promise<ApiPromise> => {
   await cryptoWaitReady();
@@ -87,7 +87,7 @@ export const extractBlockTime = (extrinsics) => {
   }
 };
 
-export const getBlockIndexer = (block) => {
+export const getBlockIndexer = (block: Block) => {
   const blockHash = block.hash.toHex();
   const blockHeight = block.header.number.toNumber();
   const blockTime = extractBlockTime(block.extrinsics);

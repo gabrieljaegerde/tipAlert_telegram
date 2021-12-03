@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 function getDbName() {
@@ -13,13 +14,14 @@ function getDbName() {
 
 const tipCollectionName = "tip";
 const userCollectionName = "user";
+const alertCollectionName = "alert";
 
 let client = null;
 let db = null;
-console.log("process.env.MONGO_URI", process.env.MONGO_URI);
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017";
 let tipCol = null;
 let userCol = null;
+let alertCol = null;
 
 export async function initDb() {
     client = await MongoClient.connect(mongoUri);
@@ -29,7 +31,7 @@ export async function initDb() {
     db = client.db(dbName);
     tipCol = db.collection(tipCollectionName);
     userCol = db.collection(userCollectionName);
-
+    alertCol = db.collection(alertCollectionName);
     await _createIndexes();
 }
 
@@ -38,8 +40,6 @@ async function _createIndexes() {
         console.error("Please call initDb first");
         process.exit(1);
     }
-
-    // TODO: create indexes for better query performance
 }
 
 async function tryInit(col) {
@@ -56,4 +56,9 @@ export async function getUserCollection() {
 export async function getTipCollection() {
     await tryInit(tipCol);
     return tipCol;
+}
+
+export async function getAlertCollection() {
+    await tryInit(alertCol);
+    return alertCol;
 }

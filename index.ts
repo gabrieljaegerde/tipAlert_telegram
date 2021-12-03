@@ -2,14 +2,14 @@ import { botParams, getDb, getLocalStorage } from "./config.js";
 import { getSettings } from "./tools/settings.js";
 import { blockCountAdapter } from "./tools/blockCountAdapter.js";
 import dotenv from "dotenv";
-import User, { IUser } from "./src/models/user.js";
 import * as bot from "./bot.js";
 import { bigNumberArithmetic, send } from "./tools/utils.js";
 import { getApi } from "./tools/substrateUtils.js";
 import { ApiPromise } from "@polkadot/api";
 import { Low } from "lowdb/lib";
 import mongoose from "mongoose";
-import { TransactionListener } from "./src/network/blockListener.js";
+import { BlockListener } from "./src/network/blockListener.js";
+import { getUserCollection } from "./src/mongo/db.js";
 
 dotenv.config();
 
@@ -52,16 +52,16 @@ class SubstrateBot {
       this.settings.network.token = networkProperties.tokenSymbol.toString();
     }
     botParams.settings = this.settings;
-
     const { runnerHandle, tBot } = await bot.start();
     botParams.bot = tBot;
     botParams.runnerHandle = runnerHandle;
-    new TransactionListener(botParams.api,
+    new BlockListener(botParams.api,
       new blockCountAdapter(botParams.localStorage, "headerBlock"));
   }
 
   async stop() {
-    const users: IUser[] = await User.find({});
+    const userCol = await getUserCollection();
+    const users = await userCol.find({});
     const alert = `🚧🚧🚧🚧🚧🚧🚧🚧🚧\nThe bot will be down for an undetermined amount of time for *maintenance*.\n\n` +
       `👷🏽‍♀️👷🏻We are working hard to get the bot running again soon and ` +
       `you will be notified when it comes back online.\n\n*Sorry for the inconvenience!*\n\n_Please ` +
@@ -90,7 +90,8 @@ async function main() {
     api
   });
   await substrateBot.run();
-  const users: IUser[] = await User.find({});
+  const userCol = await getUserCollection();
+  const users = await userCol.find({});
   const alert = `🚨The bot is back *online*!🚨`;
   if (process.env.SETUP_COMPLETE === "true") {
     for (const user of users) {

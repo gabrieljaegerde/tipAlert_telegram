@@ -19,34 +19,17 @@ export const botParams: BotParams = {
   localStorage: null,
   settings: null,
   bot: null,
-  runnerHandle: null
+  runnerHandle: null,
 };
 
-const mainKeyboard = new Keyboard()
-  .text("🧙🏻‍♀️ Creator Mode").row()
-  .text("🕵🏾‍♂️ Finder Mode").row()
-  .text("🛠️ Account Settings");
-
 export const getKeyboard = async (ctx): Promise<Keyboard> => {
-  //const user: IUser = await User.findOne({ chatId: ctx.chat.id });
-  // switch (session.menu) {
-  //   case "main":
-  //     return mainKeyboard;
-  //   default:
-  //     return mainKeyboard;
-  // }
-  return mainKeyboard;
+  return new Keyboard()
+    .text("Add alert").row()
+    .text("My addresses/alerts").row();
 };
 
 export const getDb = async (): Promise<void> => {
   await initDb();
-  // const uri = process.env.MONGO_URI;
-  // try {
-  //   await mongoose.connect(uri);
-  //   console.log('MongoDB Connected...');
-  // } catch (err) {
-  //   console.log(err);
-  // }
 };
 
 export const getLocalStorage = (): Low => {

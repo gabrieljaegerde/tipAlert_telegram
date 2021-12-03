@@ -5,6 +5,8 @@ import mongoose from "mongoose";
 import { apiThrottler } from "@grammyjs/transformer-throttler";
 import { run, RunnerHandle, sequentialize } from "@grammyjs/runner";
 import { getUserCollection } from "./src/mongo/db.js";
+import { listAlertsMiddleware } from "./src/alert/listAlerts.js";
+import { addAlertMiddleware, enterAddress } from "./src/alert/addAlert.js";
 
 export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; }> => {
 
@@ -22,20 +24,19 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
 
   bot.command("start", async (ctx) => {
     if (ctx.chat.type == "private") {
-      //const user: IUser = await User.findOne({ chatId: ctx.chat.id });
       const userCol = await getUserCollection();
       const user = await userCol.findOne({ chatId: ctx.chat.id });
 
       let message: string;
       //normal start
       if (!user) {
-        console.log("new user");
         await userCol.insertOne({
           firstName: ctx.chat.first_name,
           username: ctx.chat.username,
           chatId: ctx.chat.id,
           type: ctx.chat.type,
-          blocked: false
+          blocked: false,
+          createdAt: new Date()
         });
 
         message = `Welcome to the TipAlert bot`;
@@ -74,6 +75,33 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
           parse_mode: "Markdown",
         }
       );
+    }
+  });
+
+  /*
+   *   react bot on 'Add alert' message
+   */
+
+  bot.hears("Add alert", async (ctx) => {
+    if (ctx.chat.type == "private") {
+      const message = "Here you go";
+      addAlertMiddleware.replyToContext(ctx);
+    }
+  });
+
+  bot.use(addAlertMiddleware);
+
+  bot.use(listAlertsMiddleware);
+
+  bot.use(enterAddress.middleware());
+
+  /*
+   *   react bot on 'My addresses/alerts' message
+   */
+
+  bot.hears("My addresses/alerts", async (ctx) => {
+    if (ctx.chat.type == "private") {
+      listAlertsMiddleware.replyToContext(ctx);
     }
   });
 

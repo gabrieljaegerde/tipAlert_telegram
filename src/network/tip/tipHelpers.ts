@@ -1,4 +1,4 @@
-import { botParams } from "../../config.js";
+import { botParams } from "../../../config.js";
 import { hexToString } from "@polkadot/util";
 import {
     ProxyMethods,
@@ -6,14 +6,13 @@ import {
     Modules,
     MultisigMethods,
     UtilityMethods,
-} from "../../tools/constants.js";
+} from "../../../tools/constants.js";
 import { GenericCall } from "@polkadot/types";
-import { logger } from "../../tools/logger.js";
+import { logger } from "../../../tools/logger.js";
 import { createKeyMulti, encodeAddress } from "@polkadot/util-crypto";
 
 export const getTipMeta = async (tipHash, { blockHeight, blockHash }) => {
     const blockApi = await botParams.api.at(blockHash);
-
     let rawMeta;
     if (blockApi.query.treasury?.tips) {
         rawMeta = await blockApi.query.treasury?.tips(tipHash);

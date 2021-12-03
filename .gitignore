@@ -1,8 +1,6 @@
 .env
 node_modules/
-db/treasureItems.json
-db/localStorage.json
-db/officialAccounts.json
 .DS_Store
 metrics.js
 dist/
+log/

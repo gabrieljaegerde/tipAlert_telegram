@@ -4,6 +4,8 @@ import { blockCountAdapter } from "../../tools/blockCountAdapter.js";
 import { IStorageProvider } from "rmrk-tools/dist/listener";
 import { handleEvents } from "./eventsHandler.js";
 import { getBlockIndexer } from "../../tools/substrateUtils.js";
+import { handleExtrinsics } from "./extrinsicsHandler.js";
+import { logger } from "../../tools/logger.js";
 
 export class BlockListener {
     private apiPromise: ApiPromise;
@@ -38,24 +40,31 @@ export class BlockListener {
         }
     };
 
-    private fetchEventsAtBlock = async (blockNumber: number): Promise<void> => {
-        const blockHash = await botParams.api.rpc.chain.getBlockHash(blockNumber);
-        const rawBlock = await botParams.api.rpc.chain.getBlock(blockHash);
-        const blockApi = await botParams.api.at(blockHash);
-        const block = rawBlock.block;
-        const blockIndexer = getBlockIndexer(block);
-        const events = await blockApi.query.system.events();
+    private fetchEventsAndExtrinsicsAtBlock = async (blockNumber: number): Promise<void> => {
+        try {
+            const blockHash = await botParams.api.rpc.chain.getBlockHash(blockNumber);
+            const rawBlock = await botParams.api.rpc.chain.getBlock(blockHash);
+            const blockApi = await botParams.api.at(blockHash);
+            const block = rawBlock.block;
+            const blockIndexer = getBlockIndexer(block);
+            const events = await blockApi.query.system.events();
+            await handleExtrinsics(block.extrinsics, events, blockIndexer);
+            await handleEvents(events, blockIndexer, block.extrinsics);
+        } catch (e) {
+            logger.error(`error fetching events at block ${blockNumber}: ${e}`);
+            return;
+        }
 
-        await handleEvents(events, blockIndexer, block.extrinsics);
     };
 
-    private fetchMissingBlockEvents = async (latestBlockDb: number, to: number): Promise<void> => {
+    private fetchMissingBlockEventsAndExtrinsics = async (latestBlockDb: number, to: number): Promise<void> => {
         try {
             for (let i = latestBlockDb + 1; i <= to; i++) {
-                await this.fetchEventsAtBlock(i);
+                await this.fetchEventsAndExtrinsicsAtBlock(i);
             }
-        } catch (error) {
-            console.log(error);
+        } catch (e) {
+            logger.error(`error fetching missing block ev. & extr. from ${latestBlockDb} to ${to}: ${e}`);
+            return;
         }
     };
 
@@ -73,11 +82,11 @@ export class BlockListener {
             if (!this.missingBlockEventsFetched && !this.missingBlockFetchInitiated) {
                 this.missingBlockFetchInitiated = true;
                 const latestBlock = await this.storageProvider.get();
-                await this.fetchMissingBlockEvents(latestBlock, blockNumber - 1);
+                await this.fetchMissingBlockEventsAndExtrinsics(latestBlock, blockNumber - 1);
                 this.missingBlockEventsFetched = true;
             }
 
-            this.fetchEventsAtBlock(blockNumber);
+            this.fetchEventsAndExtrinsicsAtBlock(blockNumber);
 
             // Update local db latestBlock
             if (
