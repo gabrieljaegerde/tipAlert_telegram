@@ -1,4 +1,4 @@
-#TipAlert Telegram Bot
+# TipAlert Telegram Bot
 
 With this bot users will be alerted of any new tip on the respective substrate blockchains. 
 

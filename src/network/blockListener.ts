@@ -1,11 +1,16 @@
 import { ApiPromise } from "@polkadot/api";
 import { botParams } from "../../config.js";
 import { blockCountAdapter } from "../../tools/blockCountAdapter.js";
-import { IStorageProvider } from "rmrk-tools/dist/listener";
 import { handleEvents } from "./eventsHandler.js";
 import { getBlockIndexer } from "../../tools/substrateUtils.js";
 import { handleExtrinsics } from "./extrinsicsHandler.js";
 import { logger } from "../../tools/logger.js";
+
+interface IStorageProvider {
+    readonly storageKey: string;
+    set(latestBlock: number): Promise<void>;
+    get(): Promise<number>;
+}
 
 export class BlockListener {
     private apiPromise: ApiPromise;
