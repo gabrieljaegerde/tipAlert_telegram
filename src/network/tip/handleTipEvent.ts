@@ -47,6 +47,7 @@ export const handleTipEvent = async (
     const tip = await tipCol.findOne({ hash, isClosedOrRetracted: false });
     if (!tip) {
       logger.info(`tip with hash: ${hash} TipClosing but doesnt exist in db.`);
+      return;
     }
     await updateTipByClosingEvent(
       hash,
@@ -64,10 +65,11 @@ export const handleTipEvent = async (
   ) {
     const tipCol = await getTipCollection();
     const tip = await tipCol.findOne({ hash, isClosedOrRetracted: false });
-    if (!tip){
+    if (!tip) {
       logger.info(`tip with hash: ${hash} TipClosed/Retracted/Slashed but doesnt exist in db.`);
+      return;
     }
-      
+
     await updateTipFinalState(
       hash,
       method,

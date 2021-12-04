@@ -1,3 +1,5 @@
+import { getTipCollection } from "../../mongo/db.js";
+import { logger } from "../../../tools/logger.js";
 import { Modules, TipMethods } from "../../../tools/constants.js";
 import { computeTipValue, getTipMeta, getTippersCountFromApi } from "./tipHelpers.js";
 import { updateTipByTip } from "./updateTipByTip.js";
@@ -24,6 +26,11 @@ export const handleTipCall = async (call, author, extrinsicIndexer) => {
     } = call.toJSON();
 
     const updates = await getCommonTipUpdates(hash, extrinsicIndexer);
-    
+    const tipCol = await getTipCollection();
+    const tip = await tipCol.findOne({ hash, isClosedOrRetracted: false });
+    if (!tip) {
+      logger.info(`tip with hash: ${hash} TipCall but doesnt exist in db.`);
+      return;
+    }
     await updateTipByTip(hash, updates, author, tipValue, extrinsicIndexer);
 };
