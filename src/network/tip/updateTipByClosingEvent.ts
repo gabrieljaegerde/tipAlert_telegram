@@ -27,7 +27,7 @@ const sendClosingMessages = async (tip) => {
     if (alert.closing) {
       const user = await userCol.findOne({ chatId: alert.chatId });
       if (user && !user.blocked) {
-        const message = `*Alert for ${await getAccountName(tip.meta.who)}*\n\n` +
+        const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
           `A tip request for this wallet has been fully tipped and will *close* soon.\n\n` +
           `*Tip Reason*: _${tip.reason}_\n\n` +
           `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
@@ -45,10 +45,10 @@ const sendClosingMessages = async (tip) => {
   if (alertFinder && alertFinder.closing) {
     const user = await userCol.findOne({ chatId: alertFinder.chatId });
     if (user && !user.blocked) {
-      const message = `*Alert for ${await getAccountName(tip.meta.finder)}*\n\n` +
+      const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
         `A tip request for this wallet has been fully tipped and will *close* soon.\n\n` +
         `*Tip Reason*: _${tip.reason}_\n\n` +
-        `*Beneficiary*: _${await getAccountName(tip.meta.who)}_\n\n` +
+        `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
         `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
@@ -65,10 +65,10 @@ const sendClosingMessages = async (tip) => {
     const user = await userCol.findOne({ chatId: alertBeneficiary.chatId });
     if (user && !user.blocked) {
       const thresholdTotalCount = tip.tippersCount ? (tip.tippersCount + 1) / 2 : 0;
-      const message = `*Alert for ${await getAccountName(tip.meta.who)}*\n\n` +
+      const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
         `A tip request for this wallet has been fully tipped and will *close* soon.\n\n` +
         `*Tip Reason*: _${tip.reason}_\n\n` +
-        `*Finder*: _${await getAccountName(tip.meta.finder)}_\n\n` +
+        `*Finder*: _${await getAccountName(tip.meta.finder, true)}_\n\n` +
         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
         `*Your Payout* (${100 - tip.tipFindersFee}%): ` +

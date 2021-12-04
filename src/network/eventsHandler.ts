@@ -1,6 +1,7 @@
 import { GenericExtrinsic, Vec } from "@polkadot/types";
 import { FrameSystemEventRecord } from "@polkadot/types/lookup";
 import { u8aToHex } from "@polkadot/util";
+import { logger } from "../../tools/logger.js";
 import { handleTipEvent } from "./tip/handleTipEvent.js";
 
 const getExtrinsicSigner = (extrinsic: GenericExtrinsic) => {
@@ -63,7 +64,12 @@ export const handleEvents = async (events: Vec<FrameSystemEventRecord>, blockInd
         extrinsicIndexer: { ...blockIndexer, index: phaseValue },
         ...normalized,
       };
-      await handleTipEvent(event, normalizedExtrinsic, blockIndexer, extrinsic);
+      try {
+        await handleTipEvent(event, normalizedExtrinsic, blockIndexer, extrinsic);
+      } catch (e) {
+        logger.error(`error handling event ${JSON.stringify(normalized)}: ${e}`);
+        return;
+      }
     }
   }
 };

@@ -26,7 +26,7 @@ const sendClosedMessages = async (tip, retracted) => {
         if (alert && alert.tipped) {
             const user = await userCol.findOne({ chatId: alert.chatId });
             if (user && !user.blocked) {
-                const message = `*Alert for ${await getAccountName(tip.meta.who)}*\n\n` +
+                const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
                     `A tip request by and for this wallet has just ${retracted ? "retracted" : "closed"}.\n\n` +
                     `*Tip Reason*: _${tip.reason}_` +
                     `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_ ` +
@@ -46,10 +46,10 @@ const sendClosedMessages = async (tip, retracted) => {
     if (alertFinder && alertFinder.tipped) {
         const user = await userCol.findOne({ chatId: alertFinder.chatId });
         if (user && !user.blocked) {
-            const message = `*Alert for ${await getAccountName(tip.meta.finder)}*\n\n` +
+            const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
                 `A tip request by this wallet has just ${retracted ? "retracted" : "closed"}.\n\n` +
                 `*Tip Reason*: _${tip.reason}_` +
-                `*Beneficiary*: _${await getAccountName(tip.meta.who)}_\n\n` +
+                `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                 `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                 `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
                 `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
@@ -68,10 +68,10 @@ const sendClosedMessages = async (tip, retracted) => {
         const user = await userCol.findOne({ chatId: alertBeneficiary.chatId });
         if (user && !user.blocked) {
             const thresholdTotalCount = tip.tippersCount ? (tip.tippersCount + 1) / 2 : 0;
-            const message = `*Alert for ${await getAccountName(tip.meta.finder)}*\n\n` +
+            const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
                 `A tip request by this wallet has just ${retracted ? "retracted" : "closed"}.\n\n` +
                 `*Tip Reason*: _${tip.reason}_\n\n` +
-                `*Finder*: _${await getAccountName(tip.meta.finder)}_\n\n` +
+                `*Finder*: _${await getAccountName(tip.meta.finder, true)}_\n\n` +
                 `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                 `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
                 `*Your Payout* (${100 - tip.tipFindersFee}%): ` +

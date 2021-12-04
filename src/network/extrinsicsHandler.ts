@@ -83,10 +83,14 @@ export const handleExtrinsics = async (extrinsics = [], allEvents = [], indexer)
             ...indexer,
             index: index++,
         };
-
         if (!normalized.isSuccess) {
             continue;
         }
-        await extractAndHandleCall(extrinsic, events, extrinsicIndexer);
+        try {
+            await extractAndHandleCall(extrinsic, events, extrinsicIndexer);
+        } catch (e) {
+            logger.error(`error handling extrinsic ${normalized}: ${e}`);
+            return;
+        }
     }
 };

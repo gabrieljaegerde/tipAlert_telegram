@@ -16,55 +16,6 @@ export const getApi = async (): Promise<ApiPromise> => {
   return api;
 };
 
-export const sendAndFinalize = async (
-  tx: SubmittableExtrinsic<"promise", ISubmittableResult>,
-  account: KeyringPair
-): Promise<{
-  block: number;
-  success: boolean;
-  hash: string;
-  included: any[];
-  finalized: any[];
-}> => {
-  return new Promise(async (resolve) => {
-    console.log(`${new Date()} in sendAndFinalize`);
-    let success = false;
-    let included = [];
-    let finalized = [];
-    let block = 0;
-    const unsubscribe = await tx.signAndSend(
-      account,
-      async ({ events = [], status, dispatchError }) => {
-        if (status.isInBlock) {
-          console.log(`status: ${status}`);
-
-          success = dispatchError ? false : true;
-          console.log(
-            `📀 Transaction ${tx.meta.name} included at blockHash ${status.asInBlock} [success = ${success}]`
-          );
-          const signedBlock = await botParams.api.rpc.chain.getBlock(status.asInBlock);
-          block = signedBlock.block.header.number.toNumber();
-          included = [...events];
-        } else if (status.isBroadcast) {
-          console.log(`🚀 Transaction broadcasted.`);
-        } else if (status.isFinalized) {
-          console.log(
-            `💯 Transaction ${tx.meta.name}(..) Finalized at blockHash ${status.asFinalized}`
-          );
-          finalized = [...events];
-          const hash = tx.hash.toHex();
-          unsubscribe();
-          resolve({ success, hash, included, finalized, block });
-        } else if (status.isReady) {
-          // let's not be too noisy..
-        } else {
-          console.log(`🤷 Other status ${status}`);
-        }
-      }
-    );
-  });
-};
-
 export const getLatestFinalizedBlock = async (
   api: ApiPromise
 ): Promise<number> => {

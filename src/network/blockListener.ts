@@ -59,7 +59,6 @@ export class BlockListener {
             logger.error(`error fetching events at block ${blockNumber}: ${e}`);
             return;
         }
-
     };
 
     private fetchMissingBlockEventsAndExtrinsics = async (latestBlockDb: number, to: number): Promise<void> => {

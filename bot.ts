@@ -1,9 +1,7 @@
-import { Bot, lazySession, GrammyError, HttpError } from "grammy";
-import { hydrateFiles } from "@grammyjs/files";
+import { Bot, GrammyError, HttpError } from "grammy";
 import { botParams, getKeyboard } from "./config.js";
-import mongoose from "mongoose";
 import { apiThrottler } from "@grammyjs/transformer-throttler";
-import { run, RunnerHandle, sequentialize } from "@grammyjs/runner";
+import { run, RunnerHandle } from "@grammyjs/runner";
 import { getUserCollection } from "./src/mongo/db.js";
 import { listAlertsMiddleware } from "./src/alert/listAlerts.js";
 import { addAlertMiddleware, enterAddress } from "./src/alert/addAlert.js";
@@ -38,23 +36,25 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
           blocked: false,
           createdAt: new Date()
         });
-
-        message = `Welcome to the TipAlert bot`;
-        await ctx.reply(
-          message,
-          {
-            reply_markup: {
-              keyboard: (await getKeyboard(ctx)).build(),
-              resize_keyboard: true
-            },
-            parse_mode: "Markdown",
-          }
-        );
       }
       if (user && user.blocked) {
         user.blocked = false;
         await user.save();
       }
+      message = `Welcome to the ${botParams.settings.network.name} TipAlert bot.\n\n` +
+        `The days of refreshing polkadot.js or doTreasury ` +
+        `are over!\n\nSimply add an alert for your wallet and I will notify you here of any changes ` +
+        `to your tip requests.\n\nFrom a Dotsama Freelancer with love. 🤎`;
+      await ctx.reply(
+        message,
+        {
+          reply_markup: {
+            keyboard: (await getKeyboard(ctx)).build(),
+            resize_keyboard: true
+          },
+          parse_mode: "Markdown",
+        }
+      );
     }
   });
 

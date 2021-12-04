@@ -96,7 +96,7 @@ export const getCall = async (blockHash, callHex) => {
     const registry = await botParams.api.getBlockRegistry(blockHash);
 
     return tryInitCall(registry.registry, callHex); //|| {};
-}
+};
 
 export const getMultiSigExtrinsicAddress = (args, signer) => {
     if (!args) {
@@ -109,12 +109,12 @@ export const getMultiSigExtrinsicAddress = (args, signer) => {
         threshold,
         botParams.api.registry.chainSS58
     );
-}
+};
 
 export const calcMultisigAddress = (signatories, threshold, chainSS58) => {
     const multiPub = createKeyMulti(signatories, threshold);
     return encodeAddress(multiPub, chainSS58);
-}
+};
 
 export const getTipReason = async (normalizedExtrinsic, extrinsic) => {
     const { section, name, args } = normalizedExtrinsic;
@@ -146,7 +146,7 @@ export const getTipReason = async (normalizedExtrinsic, extrinsic) => {
     }
 
     return null;
-}
+};
 
 export const getRealSigner = async (normalizedExtrinsic) => {
     const { section, name, args, signer } = normalizedExtrinsic;
@@ -160,7 +160,7 @@ export const getRealSigner = async (normalizedExtrinsic) => {
         return await getMultiSigExtrinsicAddress(args, signer);
     }
     return signer;
-}
+};
 
 export const getTipMethodNameAndArgs = async (
     normalizedExtrinsic,
@@ -211,4 +211,4 @@ export const getTipMethodNameAndArgs = async (
     // TODO: handle other extrinsics that wrap the tip methods
 
     return [name, args];
-}
+};
