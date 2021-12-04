@@ -24,8 +24,8 @@ const sendTipMessages = async (tip, value, tipper) => {
                 const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
                     `A tip request by and for this wallet has just been tipped ` +
                     `*${amountToHumanString(value, 2)}* by *${await getAccountName(tipper)}*.\n\n` +
-                    `*Tip Reason*: _${tip.reason}_` +
-                    `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_` +
+                    `*Tip Reason*: _${tip.reason}_\n\n` +
+                    `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                     `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_`;
                 await send(user.chatId, message, inlineKeyboard);
             }
@@ -48,7 +48,7 @@ const sendTipMessages = async (tip, value, tipper) => {
                 `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                 `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
                 `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
-                `_${amountToHumanString((tip.medianValue * tip.tipFindersFee / 100).toString(), 2)}_ `;
+                `_${amountToHumanString((tip.medianValue * tip.tipFindersFee / 100).toString(), 2)}_`;
             await send(user.chatId, message, inlineKeyboard);
         }
     }

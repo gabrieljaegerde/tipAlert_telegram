@@ -131,7 +131,7 @@ export const enterAddress = new StatelessQuestion("adr", async (ctx) => {
             ).selected,
             createdAt: new Date()
         });
-        const message = "Alert setup!";
+        const message = "Alert setup! ☑️";
         await ctx.reply(message, {
             reply_markup: {
                 keyboard: (await getKeyboard(ctx)).build(),

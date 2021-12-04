@@ -10,6 +10,7 @@ import {
 import { GenericCall } from "@polkadot/types";
 import { logger } from "../../../tools/logger.js";
 import { createKeyMulti, encodeAddress } from "@polkadot/util-crypto";
+import { hexToU8a } from "@polkadot/util";
 
 export const getTipMeta = async (tipHash, { blockHeight, blockHash }) => {
     const blockApi = await botParams.api.at(blockHash);
@@ -93,9 +94,8 @@ export const tryInitCall = async (registry, callHex) => {
 };
 
 export const getCall = async (blockHash, callHex) => {
-    const registry = await botParams.api.getBlockRegistry(blockHash);
-
-    return tryInitCall(registry.registry, callHex); //|| {};
+    const registry = await botParams.api.getBlockRegistry(hexToU8a(blockHash));
+    return tryInitCall(registry.registry, callHex) || null;
 };
 
 export const getMultiSigExtrinsicAddress = (args, signer) => {
@@ -173,20 +173,18 @@ export const getTipMethodNameAndArgs = async (
         args,
         extrinsicIndexer: indexer,
     } = normalizedExtrinsic;
-
+    const blockHash = normalizedExtrinsic.extrinsicIndexer.blockHash;
     if (name === ProxyMethods.proxy) {
-        const call = await getCall(indexer.blockHash, extrinsic.args[2].toHex());
+        const call = await getCall(blockHash, extrinsic.args[2].toHex());
         return [call.method, call.toJSON().args];
     }
-
     if (Modules.Multisig === section || MultisigMethods.asMulti === name) {
         const call = await getCall(
-            indexer.blockHash,
+            blockHash,
             extrinsic.method.args[3].toHex()
         );
         return [call.method, call.toJSON().args];
     }
-
     if (Modules.Utility === section && UtilityMethods.batch === name) {
         const blockHash = normalizedExtrinsic.extrinsicIndexer.blockHash;
         const batchCalls = extrinsic.method.args[0];
@@ -194,7 +192,6 @@ export const getTipMethodNameAndArgs = async (
         for (const callInBatch of batchCalls) {
             const rawCall = callInBatch.toHex();
             const call = await getCall(blockHash, rawCall);
-
             if (
                 Modules.Treasury === call.section &&
                 [TipMethods.tipNew, TipMethods.reportAwesome].includes(call.method)

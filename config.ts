@@ -24,8 +24,8 @@ export const botParams: BotParams = {
 
 export const getKeyboard = async (ctx): Promise<Keyboard> => {
   return new Keyboard()
-    .text("Add alert").row()
-    .text("My addresses/alerts").row();
+    .text("➕ Add alert").row()
+    .text("📒 My addresses/alerts").row();
 };
 
 export const getDb = async (): Promise<void> => {

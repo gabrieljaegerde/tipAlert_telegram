@@ -79,12 +79,11 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
   });
 
   /*
-   *   react bot on 'Add alert' message
+   *   react bot on '➕ Add alert' message
    */
 
-  bot.hears("Add alert", async (ctx) => {
+  bot.hears("➕ Add alert", async (ctx) => {
     if (ctx.chat.type == "private") {
-      const message = "Here you go";
       addAlertMiddleware.replyToContext(ctx);
     }
   });
@@ -96,10 +95,10 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
   bot.use(enterAddress.middleware());
 
   /*
-   *   react bot on 'My addresses/alerts' message
+   *   react bot on '📒 My addresses/alerts' message
    */
 
-  bot.hears("My addresses/alerts", async (ctx) => {
+  bot.hears("📒 My addresses/alerts", async (ctx) => {
     if (ctx.chat.type == "private") {
       listAlertsMiddleware.replyToContext(ctx);
     }
