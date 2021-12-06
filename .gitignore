@@ -4,4 +4,4 @@ node_modules/
 metrics.js
 dist/
 log/
-db/localStorage.json
+localStorage/localStorage.json

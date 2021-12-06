@@ -60,21 +60,8 @@ class SubstrateBot {
   }
 
   async stop() {
-    const userCol = await getUserCollection();
-    const users = await userCol.find({});
-    const alert = `🚧🚧🚧🚧🚧🚧🚧🚧🚧\nThe bot will be down for an undetermined amount of time for *maintenance*.\n\n` +
-      `👷🏽‍♀️👷🏻We are working hard to get the bot running again soon and ` +
-      `you will be notified when it comes back online.\n\n*Sorry for the inconvenience!*\n\n_Please ` +
-      `refrain from depositing to the bot wallet until the bot is running again._\n🚧🚧🚧🚧🚧🚧🚧🚧🚧`;
-    if (process.env.SETUP_COMPLETE === "true") {
-      for (const user of users) {
-        if (!user.blocked) {
-          await send(user.chatId, alert);
-        }
-      }
-      await botParams.runnerHandle.stop();
-      console.log("bot stopped.");
-    }
+    await botParams.runnerHandle.stop();
+    console.log("bot stopped.");
     await mongoose.connection.close(false);
     console.log('MongoDb connection closed.');
     process.exit(0);
@@ -90,16 +77,6 @@ async function main() {
     api
   });
   await substrateBot.run();
-  const userCol = await getUserCollection();
-  const users = await userCol.find({});
-  const alert = `🚨The bot is back *online*!🚨`;
-  if (process.env.SETUP_COMPLETE === "true") {
-    for (const user of users) {
-      if (!user.blocked) {
-        await send(user.chatId, alert);
-      }
-    }
-  }
   process.once('SIGINT', () => {
     substrateBot.stop();
   });

@@ -23,7 +23,7 @@ const sendClosingMessages = async (tip) => {
   if (tip.meta.who === tip.meta.finder) {
     const alerts = await alertCol.find(
       { address: tip.meta.who }
-    );
+    ).toArray();
     for (const alert of alerts) {
       if (alert.closing) {
         const user = await userCol.findOne({ chatId: alert.chatId });
@@ -43,7 +43,7 @@ const sendClosingMessages = async (tip) => {
   //message finder
   const alertsFinder = await alertCol.find(
     { address: tip.meta.finder }
-  );
+  ).toArray();
   for (const alertFinder of alertsFinder) {
     if (alertFinder && alertFinder.closing) {
       const user = await userCol.findOne({ chatId: alertFinder.chatId });
@@ -64,7 +64,7 @@ const sendClosingMessages = async (tip) => {
   //message beneficiary
   const alertsBeneficiary = await alertCol.find(
     { address: tip.meta.who }
-  );
+  ).toArray();
   for (const alertBeneficiary of alertsBeneficiary) {
     if (alertBeneficiary && alertBeneficiary.closing) {
       const user = await userCol.findOne({ chatId: alertBeneficiary.chatId });
