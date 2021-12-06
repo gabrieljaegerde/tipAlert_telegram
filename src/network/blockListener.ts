@@ -85,6 +85,7 @@ export class BlockListener {
 
             if (!this.missingBlockEventsFetched && !this.missingBlockFetchInitiated) {
                 this.missingBlockFetchInitiated = true;
+                console.log("fetching missing")
                 const latestBlock = await this.storageProvider.get();
                 await this.fetchMissingBlockEventsAndExtrinsics(latestBlock, blockNumber - 1);
                 this.missingBlockEventsFetched = true;
