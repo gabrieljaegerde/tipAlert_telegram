@@ -43,6 +43,7 @@ const sendTipMessages = async (tip, value, tipper) => {
         if (alertFinder && alertFinder.tipped) {
             const user = await userCol.findOne({ chatId: alertFinder.chatId });
             if (user && !user.blocked) {
+                const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
                 const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
                     `A tip request created by this wallet has just been tipped ` +
                     `*${amountToHumanString(value, 2)}* by *${await getAccountName(tipper)}*.\n\n` +
@@ -50,8 +51,8 @@ const sendTipMessages = async (tip, value, tipper) => {
                     `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                     `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                     `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                    `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
-                    `_${amountToHumanString((tip.medianValue * tip.tipFindersFee / 100).toString(), 2)}_`;
+                    `*Your Finder's Fee* (${findersFee}%): ` +
+                    `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_`;
                 await send(user.chatId, message, inlineKeyboard);
             }
         }
@@ -65,6 +66,7 @@ const sendTipMessages = async (tip, value, tipper) => {
         if (alertBeneficiary && alertBeneficiary.tipped) {
             const user = await userCol.findOne({ chatId: alertBeneficiary.chatId });
             if (user && !user.blocked) {
+                const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
                 const thresholdTotalCount = tip.tippersCount ? (tip.tippersCount + 1) / 2 : 0;
                 const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
                     `A tip request for this wallet has just been tipped ` +
@@ -73,8 +75,8 @@ const sendTipMessages = async (tip, value, tipper) => {
                     `*Finder*: _${await getAccountName(tip.meta.finder, true)}_\n\n` +
                     `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                     `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                    `*Your Payout* (${100 - tip.tipFindersFee}%): ` +
-                    `_${amountToHumanString((tip.medianValue * (100 - tip.tipFindersFee) / 100).toString(), 2)}_`;
+                    `*Your Payout* (${100 - findersFee}%): ` +
+                    `_${amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2)}_`;
                 await send(user.chatId, message, inlineKeyboard);
             }
         }

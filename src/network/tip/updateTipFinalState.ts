@@ -68,6 +68,7 @@ const sendClosedMessages = async (tip, closingMethod) => {
             const user = await userCol.findOne({ chatId: alertFinder.chatId });
             if (user && !user.blocked) {
                 let message;
+                const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
                 if (closingMethod === TipEvents.TipRetracted) {
                     message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
                         `A tip request by this wallet has just retracted.\n\n` +
@@ -75,8 +76,8 @@ const sendClosedMessages = async (tip, closingMethod) => {
                         `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                        `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * tip.tipFindersFee / 100).toString(), 2)}_\n\n` +
+                        `*Your Finder's Fee* (${findersFee}%): ` +
+                        `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_\n\n` +
                         `You will *NOT* receive the finder's fee.`;
                 }
                 else if (closingMethod === TipEvents.TipSlashed) {
@@ -86,8 +87,8 @@ const sendClosedMessages = async (tip, closingMethod) => {
                         `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                        `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * tip.tipFindersFee / 100).toString(), 2)}_\n\n` +
+                        `*Your Finder's Fee* (${findersFee}%): ` +
+                        `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_\n\n` +
                         `You will *NOT* receive the finder's fee and have lost the tip deposit.`;
                 }
                 else {
@@ -97,8 +98,8 @@ const sendClosedMessages = async (tip, closingMethod) => {
                         `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                        `*Your Finder's Fee* (${tip.tipFindersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * tip.tipFindersFee / 100).toString(), 2)}_\n\n` +
+                        `*Your Finder's Fee* (${findersFee}%): ` +
+                        `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_\n\n` +
                         `You will shortly receive payout of the finder's fee.`;
                 }
                 await send(user.chatId, message, inlineKeyboard);
@@ -115,6 +116,7 @@ const sendClosedMessages = async (tip, closingMethod) => {
             const user = await userCol.findOne({ chatId: alertBeneficiary.chatId });
             if (user && !user.blocked) {
                 let message;
+                const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
                 if (closingMethod === TipEvents.TipRetracted || closingMethod === TipEvents.TipSlashed) {
                     message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
                         `A tip request by this wallet has just retracted.\n\n` +
@@ -122,8 +124,8 @@ const sendClosedMessages = async (tip, closingMethod) => {
                         `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                        `*Your Payout* (${100 - tip.tipFindersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * (100 - tip.tipFindersFee) / 100).toString(), 2)}_\n\n` +
+                        `*Your Payout* (${100 - findersFee}%): ` +
+                        `_${amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2)}_\n\n` +
                         `You will *NOT* receive the payout.`;
                 }
                 else {
@@ -133,8 +135,8 @@ const sendClosedMessages = async (tip, closingMethod) => {
                         `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
                         `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-                        `*Your Payout* (${100 - tip.tipFindersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * (100 - tip.tipFindersFee) / 100).toString(), 2)}_\n\n` +
+                        `*Your Payout* (${100 - findersFee}%): ` +
+                        `_${amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2)}_\n\n` +
                         `You will shortly receive your payout.`;
                 }
                 await send(user.chatId, message, inlineKeyboard);

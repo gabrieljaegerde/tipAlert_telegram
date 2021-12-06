@@ -53,11 +53,12 @@ const sendNewMessages = async (tip) => {
     if (alertFinder && alertFinder.new) {
       const user = await userCol.findOne({ chatId: alertFinder.chatId });
       if (user && !user.blocked) {
+        const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
         const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
           "A new tip request has just been created by this wallet.\n\n" +
           `*Tip Reason*: _${tip.reason}_\n\n` +
           `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
-          `*Your Finder's Fee*: _${tip.tipFindersFee}%_`;
+          `*Your Finder's Fee*: _${findersFee}%_`;
         await send(user.chatId, message, inlineKeyboard);
       }
     }
