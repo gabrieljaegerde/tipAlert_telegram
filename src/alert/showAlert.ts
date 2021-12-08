@@ -29,7 +29,8 @@ showAlert.select(
             alert[key] = newState;
             await alertCol.updateOne({ address: alert.address }, { $set: alert });
             return true;
-        }
+        },
+        columns: 1
     }
 );
 

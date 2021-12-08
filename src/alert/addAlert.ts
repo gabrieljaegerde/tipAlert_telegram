@@ -25,10 +25,9 @@ const alerts = [
     }
 ];
 
-let userAlerts = [];
+let userAlerts = alerts;
 
 export const addAlert = new MenuTemplate(async (ctx: Context) => {
-    userAlerts = alerts;
     let info = `What events would you like to get alerts for?`;
     if (userAlerts.filter(e => e.selected).length == 0) {
         info += `\n\nPlease select at least one event for which you would like to receive alerts.`;
@@ -51,7 +50,8 @@ addAlert.select(
                 e => e.name == key
             ).selected = newState;
             return true;
-        }
+        },
+        columns: 1
     }
 );
 
