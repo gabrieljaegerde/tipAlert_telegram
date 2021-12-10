@@ -5,8 +5,8 @@
     "@grammyjs/runner": "^1.0.2",
     "@grammyjs/stateless-question": "^3.0.0",
     "@grammyjs/transformer-throttler": "^1.0.1",
-    "@polkadot/api": "^6.10.3",
-    "@polkadot/keyring": "^8.0.5",
+    "@polkadot/api": "^6.11.1",
+    "@polkadot/keyring": "^8.1.2",
     "@polkadot/types": "^6.10.3",
     "@polkadot/util": "^8.0.5",
     "@polkadot/util-crypto": "^8.0.5",
@@ -23,10 +23,11 @@
   "type": "module",
   "license": "Apache-2.0",
   "name": "substrate_tip_alert",
-  "description": "Tip Alert - Kusama Edition.",
+  "description": "Tip Alert - Substrate.",
   "keywords": [
     "substrate",
     "kusama",
+    "polkadot",
     "telegram",
     "bot"
   ],

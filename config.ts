@@ -1,6 +1,5 @@
 import { Low, JSONFile } from 'lowdb';
 import { Keyboard } from "grammy";
-import mongoose from "mongoose";
 import { ApiPromise } from "@polkadot/api";
 import { Bot } from "grammy";
 import { RunnerHandle } from '@grammyjs/runner';

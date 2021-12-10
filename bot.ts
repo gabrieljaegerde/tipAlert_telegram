@@ -1,10 +1,11 @@
 import { Bot, GrammyError, HttpError } from "grammy";
 import { botParams, getKeyboard } from "./config.js";
-import { apiThrottler } from "@grammyjs/transformer-throttler";
+import { apiThrottler, APIThrottlerOptions } from "@grammyjs/transformer-throttler";
 import { run, RunnerHandle } from "@grammyjs/runner";
 import { getUserCollection } from "./src/mongo/db.js";
 import { listAlertsMiddleware } from "./src/alert/listAlerts.js";
 import { addAlertMiddleware, enterAddress } from "./src/alert/addAlert.js";
+import { Bottleneck } from "@grammyjs/transformer-throttler/dist/deps.node";
 
 export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; }> => {
 
@@ -13,8 +14,14 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
    */
 
   const bot = new Bot(botParams.settings.botToken);
-
-  bot.api.config.use(apiThrottler());
+  const outConfig: Bottleneck.ConstructorOptions = {
+    maxConcurrent: 1, // only 1 job at a time
+    minTime: 1000, // wait this many milliseconds to be ready, after a job
+  };
+  const throttleOptions: APIThrottlerOptions = {
+    out: outConfig
+  };
+  bot.api.config.use(apiThrottler(throttleOptions));
 
   /*
    *   /start command handler
