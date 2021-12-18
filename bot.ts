@@ -45,8 +45,11 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
         });
       }
       if (user && user.blocked) {
-        user.blocked = false;
-        await user.save();
+        await userCol.findOneAndUpdate({ chatId: ctx.chat.id },
+          {
+            $set: { blocked: false }
+          }
+        );
       }
       message = `Welcome to the ${botParams.settings.network.name} TipAlert bot.\n\n` +
         `The days of refreshing polkadot.js or doTreasury ` +
@@ -130,9 +133,11 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
     if (e instanceof GrammyError) {
       if (e.description.includes("bot was blocked by the user")) {
         const userCol = await getUserCollection();
-        const user = await userCol.findOne({ chatId: ctx.chat.id });
-        user.blocked = true;
-        await user.save();
+        await userCol.findOneAndUpdate({ chatId: ctx.chat.id },
+          {
+            $set: { blocked: true }
+          }
+        );
         console.log(new Date(), `Bot was blocked by user with chatid ${e.payload.chat_id}`);
         return;
       }

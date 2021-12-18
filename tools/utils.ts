@@ -64,9 +64,11 @@ export const send = async (id: number, message: string, inlineKeyboard?: InlineK
   catch (error) {
     if (error.message.includes("bot was blocked by the user")) {
       const userCol = await getUserCollection();
-      const user = await userCol.findOne({ chatId: id });
-      user.blocked = true;
-      await user.save();
+      await userCol.findOneAndUpdate({ chatId: id },
+        {
+          $set: { blocked: true }
+        }
+      );
       console.log(new Date(), `Bot was blocked by user with chatid ${id}`);
       return;
     }
