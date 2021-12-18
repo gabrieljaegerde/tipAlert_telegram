@@ -1,6 +1,6 @@
 import { botParams, getDb, getLocalStorage } from "./config.js";
 import { getSettings } from "./tools/settings.js";
-import { BlockCountAdapter } from "./tools/BlockCountAdapter.js";
+import { BlockCountAdapter } from "./tools/blockCountAdapter.js";
 import dotenv from "dotenv";
 import * as bot from "./bot.js";
 import { getApi } from "./tools/substrateUtils.js";
