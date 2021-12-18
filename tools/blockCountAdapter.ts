@@ -4,7 +4,7 @@ export interface IStorageProvider {
   get(): Promise<number>;
 }
 
-export class blockCountAdapter implements IStorageProvider {
+export class BlockCountAdapter implements IStorageProvider {
   readonly storageKey: string;
   private db: any;
   public constructor(db: any, storageKey?: string) {

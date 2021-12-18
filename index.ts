@@ -1,6 +1,6 @@
 import { botParams, getDb, getLocalStorage } from "./config.js";
 import { getSettings } from "./tools/settings.js";
-import { blockCountAdapter } from "./tools/blockCountAdapter.js";
+import { BlockCountAdapter } from "./tools/BlockCountAdapter.js";
 import dotenv from "dotenv";
 import * as bot from "./bot.js";
 import { getApi } from "./tools/substrateUtils.js";
@@ -54,7 +54,7 @@ class SubstrateBot {
     botParams.bot = tBot;
     botParams.runnerHandle = runnerHandle;
     new BlockListener(botParams.api,
-      new blockCountAdapter(botParams.localStorage, "headerBlock"));
+      new BlockCountAdapter(botParams.localStorage, "headerBlock"));
   }
 
   async stop() {
