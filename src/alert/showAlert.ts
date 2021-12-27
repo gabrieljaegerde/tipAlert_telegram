@@ -2,14 +2,14 @@ import { MenuTemplate, createBackMainMenuButtons, deleteMenuFromContext } from "
 import { Context, InlineKeyboard, InputFile } from "grammy";
 import { getAlertCollection } from "../mongo/db.js";
 import { listAlertsMiddleware } from "./listAlerts.js";
-import { getAccountName, send } from "../../tools/utils.js";
+import { escapeMarkdown, getAccountName, send } from "../../tools/utils.js";
 
 let alert;
 
 export const showAlert = new MenuTemplate(async (ctx: Context) => {
     const alertCol = await getAlertCollection();
     alert = await alertCol.findOne({ address: ctx.match[1] });
-    let info = `Alert for *${await getAccountName(alert.address)}*\n\n` +
+    let info = `Alert for *${escapeMarkdown(await getAccountName(alert.address))}*\n\n` +
         `You will be informed of the following events regarding this address:\n\n` +
         `New tip request: ${alert.new ? "✅" : "❌"}\n\n` +
         `Tip received: ${alert.tipped ? "✅" : "❌"}\n\n` +
@@ -40,7 +40,7 @@ showAlert.interact("Delete Alert", "da", {
         const alertCol = await getAlertCollection();
         await alertCol.deleteOne({ address: alert.address });
         const message = `Alert for ${alert.address} deleted.`;
-        await send(ctx.chat.id, message);
+        await send(ctx.chat.id, message, "Markdown");
         listAlertsMiddleware.replyToContext(ctx, `la/`);
         return false;
     },

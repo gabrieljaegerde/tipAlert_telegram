@@ -1,5 +1,4 @@
-import { encodeAddress } from "@polkadot/util-crypto";
-import { amountToHumanString, getAccountName, send } from "../../../tools/utils.js";
+import { amountToHumanString, escapeMarkdown, getAccountName, send } from "../../../tools/utils.js";
 import { botParams } from "../../../config.js";
 import { getAlertCollection, getTipCollection, getUserCollection } from "../../mongo/db.js";
 import {
@@ -28,12 +27,13 @@ const sendClosingMessages = async (tip) => {
       if (alert.closing) {
         const user = await userCol.findOne({ chatId: alert.chatId });
         if (user && !user.blocked) {
-          const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-            `A tip request for this wallet has been fully tipped and is now entering the *closing period*.\n\n` +
-            `*Tip Reason*: _${tip.reason}_\n\n` +
+          const escapedTipReason = escapeMarkdown(tip.reason);
+          const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+            `A tip request for this wallet has been fully tipped and is now entering the *closing period*\\.\n\n` +
+            `*Tip Reason*: _${escapedTipReason}_\n\n` +
             `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-            `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_`;
-          await send(user.chatId, message, inlineKeyboard);
+            `*Median Tip*: _${escapeMarkdown(amountToHumanString(tip.medianValue, 2))}_`;
+          await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
         }
       }
     }
@@ -49,15 +49,16 @@ const sendClosingMessages = async (tip) => {
       const user = await userCol.findOne({ chatId: alertFinder.chatId });
       if (user && !user.blocked) {
         const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
-        const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
-          `A tip request for this wallet has been fully tipped and is now entering the *closing period*.\n\n` +
-          `*Tip Reason*: _${tip.reason}_\n\n` +
-          `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+        const escapedTipReason = escapeMarkdown(tip.reason);
+        const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.finder, true))}*\n\n` +
+          `A tip request for this wallet has been fully tipped and is now entering the *closing period*\\.\n\n` +
+          `*Tip Reason*: _${escapedTipReason}_\n\n` +
+          `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
           `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-          `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-          `*Your Finder's Fee* (${findersFee}%): ` +
-          `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_ `;
-        await send(user.chatId, message, inlineKeyboard);
+          `*Median Tip*: _${escapeMarkdown(amountToHumanString(tip.medianValue, 2))}_\n\n` +
+          `*Your Finder's Fee* \\(${findersFee}%\\): ` +
+          `_${escapeMarkdown(amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2))}_ `;
+        await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
       }
     }
   }
@@ -72,15 +73,16 @@ const sendClosingMessages = async (tip) => {
       if (user && !user.blocked) {
         const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
         const thresholdTotalCount = tip.tippersCount ? (tip.tippersCount + 1) / 2 : 0;
-        const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-          `A tip request for this wallet has been fully tipped and is now entering the *closing period*.\n\n` +
-          `*Tip Reason*: _${tip.reason}_\n\n` +
-          `*Finder*: _${await getAccountName(tip.meta.finder, true)}_\n\n` +
+        const escapedTipReason = escapeMarkdown(tip.reason);
+        const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+          `A tip request for this wallet has been fully tipped and is now entering the *closing period*\\.\n\n` +
+          `*Tip Reason*: _${escapedTipReason}_\n\n` +
+          `*Finder*: _${escapeMarkdown(await getAccountName(tip.meta.finder, true))}_\n\n` +
           `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-          `*Median Tip*: _${amountToHumanString(tip.medianValue, 2)}_\n\n` +
-          `*Your Payout* (${100 - findersFee}%): ` +
-          `_${amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2)}_`;
-        await send(user.chatId, message, inlineKeyboard);
+          `*Median Tip*: _${escapeMarkdown(amountToHumanString(tip.medianValue, 2))}_\n\n` +
+          `*Your Payout* \\(${100 - findersFee}%\\): ` +
+          `_${escapeMarkdown(amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2))}_`;
+        await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
       }
     }
   }

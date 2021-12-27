@@ -1,5 +1,5 @@
 import { InlineKeyboard } from "grammy";
-import { amountToHumanString, getAccountName, send } from "../../../tools/utils.js";
+import { amountToHumanString, escapeMarkdown, getAccountName, send } from "../../../tools/utils.js";
 import { botParams } from "../../../config.js";
 import { TipEvents } from "../../../tools/constants.js";
 import { logger } from "../../../tools/logger.js";
@@ -29,31 +29,32 @@ const sendClosedMessages = async (tip, closingMethod) => {
                 if (user && !user.blocked) {
                     let message;
                     const medianValue = tip.medianValue ? tip.medianValue : 0;
+                    const escapedTipReason = escapeMarkdown(tip.reason);
                     if (closingMethod === TipEvents.TipRetracted) {
-                        message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-                            `A tip request by and for this wallet has just retracted.\n\n` +
-                            `*Tip Reason*: _${tip.reason}_\n\n` +
+                        message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+                            `A tip request by and for this wallet has just retracted\\.\n\n` +
+                            `*Tip Reason*: _${escapedTipReason}_\n\n` +
                             `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                            `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
-                            `You will *NOT* receive a payout.`;
+                            `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
+                            `You will *NOT* receive a payout\\.`;
                     }
                     else if (closingMethod === TipEvents.TipSlashed) {
-                        message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-                            `A tip request by and for this wallet has just slashed.\n\n` +
-                            `*Tip Reason*: _${tip.reason}_\n\n` +
+                        message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+                            `A tip request by and for this wallet has just slashed\\.\n\n` +
+                            `*Tip Reason*: _${escapedTipReason}_\n\n` +
                             `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                            `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
-                            `You will *NOT* receive a payout and have lost the tip deposit.`;
+                            `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
+                            `You will *NOT* receive a payout and have lost the tip deposit\\.`;
                     }
                     else {
-                        message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-                            `A tip request by and for this wallet has just closed.\n\n` +
-                            `*Tip Reason*: _${tip.reason}_\n\n` +
+                        message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+                            `A tip request by and for this wallet has just closed\\.\n\n` +
+                            `*Tip Reason*: _${escapedTipReason}_\n\n` +
                             `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                            `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
-                            `You will shortly receive payout of the median tip.`;
+                            `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
+                            `You have just received payout of the median tip\\.`;
                     }
-                    await send(user.chatId, message, inlineKeyboard);
+                    await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
                 }
             }
         }
@@ -71,40 +72,41 @@ const sendClosedMessages = async (tip, closingMethod) => {
                 let message;
                 const medianValue = tip.medianValue ? tip.medianValue : 0;
                 const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
+                const escapedTipReason = escapeMarkdown(tip.reason);
                 if (closingMethod === TipEvents.TipRetracted) {
-                    message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
-                        `A tip request by this wallet has just retracted.\n\n` +
-                        `*Tip Reason*: _${tip.reason}_\n\n` +
-                        `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+                    message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.finder, true))}*\n\n` +
+                        `A tip request by this wallet has just retracted\\.\n\n` +
+                        `*Tip Reason*: _${escapedTipReason}_\n\n` +
+                        `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                        `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
-                        `*Your Finder's Fee* (${findersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_\n\n` +
-                        `You will *NOT* receive the finder's fee.`;
+                        `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
+                        `*Your Finder's Fee* \\(${findersFee}%\\): ` +
+                        `_${escapeMarkdown(amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2))}_\n\n` +
+                        `You will *NOT* receive the finder's fee\\.`;
                 }
                 else if (closingMethod === TipEvents.TipSlashed) {
-                    message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
-                        `A tip request by this wallet has just slashed.\n\n` +
-                        `*Tip Reason*: _${tip.reason}_\n\n` +
-                        `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+                    message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.finder, true))}*\n\n` +
+                        `A tip request by this wallet has just slashed\\.\n\n` +
+                        `*Tip Reason*: _${escapedTipReason}_\n\n` +
+                        `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                        `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
-                        `*Your Finder's Fee* (${findersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_\n\n` +
-                        `You will *NOT* receive the finder's fee and have lost the tip deposit.`;
+                        `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
+                        `*Your Finder's Fee* \\(${findersFee}%\\): ` +
+                        `_${escapeMarkdown(amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2))}_\n\n` +
+                        `You will *NOT* receive the finder's fee and have lost the tip deposit\\.`;
                 }
                 else {
-                    message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
-                        `A tip request by this wallet has just closed.\n\n` +
-                        `*Tip Reason*: _${tip.reason}_\n\n` +
-                        `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+                    message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.finder, true))}*\n\n` +
+                        `A tip request by this wallet has just closed\\.\n\n` +
+                        `*Tip Reason*: _${escapedTipReason}_\n\n` +
+                        `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                        `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
-                        `*Your Finder's Fee* (${findersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2)}_\n\n` +
-                        `You will shortly receive payout of the finder's fee.`;
+                        `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
+                        `*Your Finder's Fee* \\(${findersFee}%\\): ` +
+                        `_${escapeMarkdown(amountToHumanString((tip.medianValue * findersFee / 100).toString(), 2))}_\n\n` +
+                        `You have just received payout of the finder's fee\\.`;
                 }
-                await send(user.chatId, message, inlineKeyboard);
+                await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
             }
         }
     }
@@ -121,28 +123,28 @@ const sendClosedMessages = async (tip, closingMethod) => {
                 const medianValue = tip.medianValue ? tip.medianValue : 0;
                 const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
                 if (closingMethod === TipEvents.TipRetracted || closingMethod === TipEvents.TipSlashed) {
-                    message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-                        `A tip request by this wallet has just retracted.\n\n` +
+                    message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+                        `A tip request by this wallet has just retracted\\.\n\n` +
                         `*Tip Reason*: _${tip.reason}_\n\n` +
-                        `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+                        `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                        `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
+                        `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
                         `*Your Payout* (${100 - findersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2)}_\n\n` +
-                        `You will *NOT* receive the payout.`;
+                        `_${escapeMarkdown(amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2))}_\n\n` +
+                        `You will *NOT* receive the payout\\.`;
                 }
                 else {
-                    message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-                        `A tip request by this wallet has just closed.\n\n` +
+                    message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+                        `A tip request by this wallet has just closed\\.\n\n` +
                         `*Tip Reason*: _${tip.reason}_\n\n` +
-                        `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+                        `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
                         `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
-                        `*Median Tip*: _${amountToHumanString(medianValue, 2)}_\n\n` +
+                        `*Median Tip*: _${escapeMarkdown(amountToHumanString(medianValue, 2))}_\n\n` +
                         `*Your Payout* (${100 - findersFee}%): ` +
-                        `_${amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2)}_\n\n` +
-                        `You will shortly receive your payout.`;
+                        `_${escapeMarkdown(amountToHumanString((tip.medianValue * (100 - findersFee) / 100).toString(), 2))}_\n\n` +
+                        `You will shortly receive your payout\\.`;
                 }
-                await send(user.chatId, message, inlineKeyboard);
+                await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
             }
         }
     }

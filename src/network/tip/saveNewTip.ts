@@ -1,4 +1,4 @@
-import { getAccountName, send } from "../../../tools/utils.js";
+import { escapeMarkdown, getAccountName, send } from "../../../tools/utils.js";
 import {
   TipEvents,
 } from "../../../tools/constants.js";
@@ -34,11 +34,12 @@ const sendNewMessages = async (tip) => {
       if (alert && alert.new) {
         const user = await userCol.findOne({ chatId: alert.chatId });
         if (user && !user.blocked) {
-          const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
+          const escapedTipReason = escapeMarkdown(tip.reason);
+          const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
             "A new tip request has just been created of which this wallet is " +
-            "finder and beneficiary.\n\n" +
-            `*Tip Reason*: _${tip.reason}_`;
-          await send(user.chatId, message, inlineKeyboard);
+            "finder and beneficiary\\.\n\n" +
+            `*Tip Reason*: _${escapedTipReason}_`;
+          await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
         }
       }
     }
@@ -53,13 +54,14 @@ const sendNewMessages = async (tip) => {
     if (alertFinder && alertFinder.new) {
       const user = await userCol.findOne({ chatId: alertFinder.chatId });
       if (user && !user.blocked) {
+        const escapedTipReason = escapeMarkdown(tip.reason);
         const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
-        const message = `*Alert for ${await getAccountName(tip.meta.finder, true)}*\n\n` +
-          "A new tip request has just been created by this wallet.\n\n" +
-          `*Tip Reason*: _${tip.reason}_\n\n` +
-          `*Beneficiary*: _${await getAccountName(tip.meta.who, true)}_\n\n` +
+        const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.finder, true))}*\n\n` +
+          "A new tip request has just been created by this wallet\\.\n\n" +
+          `*Tip Reason*: _${escapedTipReason}_\n\n` +
+          `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
           `*Your Finder's Fee*: _${findersFee}%_`;
-        await send(user.chatId, message, inlineKeyboard);
+        await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
       }
     }
   }
@@ -72,11 +74,12 @@ const sendNewMessages = async (tip) => {
     if (alertBeneficiary && alertBeneficiary.new) {
       const user = await userCol.findOne({ chatId: alertBeneficiary.chatId });
       if (user && !user.blocked) {
-        const message = `*Alert for ${await getAccountName(tip.meta.who, true)}*\n\n` +
-          "A new tip request has just been created for this wallet.\n\n" +
-          `*Tip Reason*: _${tip.reason}_\n\n` +
-          `*Finder*: _${await getAccountName(tip.meta.finder, true)}_`;
-        await send(user.chatId, message, inlineKeyboard);
+        const escapedTipReason = escapeMarkdown(tip.reason);
+        const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
+          "A new tip request has just been created for this wallet\\.\n\n" +
+          `*Tip Reason*: _${escapedTipReason}_\n\n` +
+          `*Finder*: _${escapeMarkdown(await getAccountName(tip.meta.finder, true))}_`;
+        await send(user.chatId, message, "MarkdownV2", inlineKeyboard);
       }
     }
   }
