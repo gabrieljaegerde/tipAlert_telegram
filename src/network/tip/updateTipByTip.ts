@@ -73,7 +73,7 @@ const sendTipMessages = async (tip, value, tipper) => {
                 const thresholdTotalCount = tip.tippersCount ? (tip.tippersCount + 1) / 2 : 0;
                 const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.who, true))}*\n\n` +
                     `A tip request for this wallet has just been tipped ` +
-                    `*${amountToHumanString(value, 2)}* by *${escapeMarkdown(await getAccountName(tipper))}*\\.\n\n` +
+                    `*${escapeMarkdown(amountToHumanString(value, 2))}* by *${escapeMarkdown(await getAccountName(tipper))}*\\.\n\n` +
                     `*Tip Reason*: _${escapedTipReason}_\n\n` +
                     `*Finder*: _${escapeMarkdown(await getAccountName(tip.meta.finder, true))}_\n\n` +
                     `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +
