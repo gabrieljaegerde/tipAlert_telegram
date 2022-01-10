@@ -84,6 +84,7 @@ export const send = async (id: number, message: string, parseMode: string, inlin
     }
     console.log(new Date(), error);
   }
+  sleep(1000);
 };
 
 export const getAccountName = async (account, short?: boolean) => {

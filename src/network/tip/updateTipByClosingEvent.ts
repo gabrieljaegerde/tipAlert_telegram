@@ -51,7 +51,7 @@ const sendClosingMessages = async (tip) => {
         const findersFee = tip.meta.findersFee ? tip.tipFindersFee : 0;
         const escapedTipReason = escapeMarkdown(tip.reason);
         const message = `*Alert for ${escapeMarkdown(await getAccountName(tip.meta.finder, true))}*\n\n` +
-          `A tip request for this wallet has been fully tipped and is now entering the *closing period*\\.\n\n` +
+          `A tip request created by this wallet has been fully tipped and is now entering the *closing period*\\.\n\n` +
           `*Tip Reason*: _${escapedTipReason}_\n\n` +
           `*Beneficiary*: _${escapeMarkdown(await getAccountName(tip.meta.who, true))}_\n\n` +
           `*Total Tips*: _${tip.meta.tips.length}/${thresholdTotalCount}_\n\n` +

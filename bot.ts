@@ -14,14 +14,14 @@ export const start = async (): Promise<{ runnerHandle: RunnerHandle, tBot: Bot; 
    */
 
   const bot = new Bot(botParams.settings.botToken);
-  const outConfig: Bottleneck.ConstructorOptions = {
-    maxConcurrent: 1, // only 1 job at a time
-    minTime: 1000, // wait this many milliseconds to be ready, after a job
-  };
-  const throttleOptions: APIThrottlerOptions = {
-    out: outConfig
-  };
-  bot.api.config.use(apiThrottler(throttleOptions));
+  // const outConfig: Bottleneck.ConstructorOptions = {
+  //   maxConcurrent: 1, // only 1 job at a time
+  //   minTime: 1000, // wait this many milliseconds to be ready, after a job
+  // };
+  // const throttleOptions: APIThrottlerOptions = {
+  //   out: outConfig
+  // };
+  //bot.api.config.use(apiThrottler(throttleOptions));
 
   /*
    *   /start command handler

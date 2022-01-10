@@ -35,12 +35,6 @@ export const handleTipEvent = async (
   // hash.push(eventData);
   const hash = eventData[0];
   if (method === TipEvents.NewTip) {
-    const tipCol = await getTipCollection();
-    const tip = await tipCol.findOne({ hash, isClosedOrRetracted: false });
-    if (tip) {
-      logger.info(`tip with hash: ${hash} exists already`);
-      return;
-    }
     await saveNewTip(hash, normalizedExtrinsic, extrinsic);
   } else if (method === TipEvents.TipClosing) {
     const tipCol = await getTipCollection();

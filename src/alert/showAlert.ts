@@ -15,7 +15,7 @@ export const showAlert = new MenuTemplate(async (ctx: Context) => {
         `Tip received: ${alert.tipped ? "✅" : "❌"}\n\n` +
         `Tip request closing: ${alert.closing ? "✅" : "❌"}\n\n` +
         `Tip request closed: ${alert.closed ? "✅" : "❌"}\n\n`;
-    return { text: info, parse_mode: "Markdown" };
+    return { text: info, parse_mode: "MarkdownV2" };
 });
 
 showAlert.select(
