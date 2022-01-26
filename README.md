@@ -7,6 +7,7 @@ This project is open-source and your contributions more than welcome!!!
 If you enjoy this tool and would like to support my future projects:
 
 KSM: Hgcdd6sjp37KD1cKrAbwMZ6sBZTAVwb6v2GTssv9L2w1oN3
+
 DOT: 19W2RarZyGCQwc3zuT8qMZ88b8PwieEtvpakwoF87wMmkVy
 
 Much appreciated!
