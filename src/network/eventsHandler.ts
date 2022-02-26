@@ -5,7 +5,7 @@ import { logger } from "../../tools/logger.js";
 import { handleTipEvent } from "./tip/handleTipEvent.js";
 
 const getExtrinsicSigner = (extrinsic: GenericExtrinsic) => {
-  let signer = extrinsic["_raw"]["signature"].get("signer").toString();
+  let signer = extrinsic.signer.toString();
   return signer;
 };
 
