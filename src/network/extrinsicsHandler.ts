@@ -68,7 +68,7 @@ const handleWrappedCall = async (call, signer, extrinsicIndexer) => {
 };
 
 const extractAndHandleCall = async (extrinsic, events = [], extrinsicIndexer) => {
-    const signer = extrinsic._raw.signature.signer.toString();
+    const signer = extrinsic.signer.toString();
     const call = extrinsic.method;
 
     await handleWrappedCall(call, signer, extrinsicIndexer);
