@@ -43,7 +43,7 @@ export const normalizeExtrinsic = (extrinsic: GenericExtrinsic, events: Vec<Fram
   };
 };
 
-export const handleEvents = async (events: Vec<FrameSystemEventRecord>, blockIndexer, extrinsics: Vec<GenericExtrinsic>) => {
+export const handleEvents = async (events, blockIndexer, extrinsics: Vec<GenericExtrinsic>) => {
   if (events.length <= 0) {
     return false;
   }

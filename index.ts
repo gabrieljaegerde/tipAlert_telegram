@@ -1,3 +1,4 @@
+import '@polkadot/api-augment';
 import { botParams, getDb, getLocalStorage } from "./config.js";
 import { getSettings } from "./tools/settings.js";
 import { BlockCountAdapter } from "./tools/blockCountAdapter.js";

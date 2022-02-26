@@ -76,8 +76,8 @@ export class BlockListener {
         const headSubscriber = this.apiPromise.rpc.chain.subscribeFinalizedHeads;
 
         headSubscriber(async (header) => {
-            const blockNumber = header.number.toNumber();
-            if (blockNumber === 0) {
+            const latestFinalisedBlockNum = header.number.toNumber();
+            if (latestFinalisedBlockNum === 0) {
                 console.error(
                     "Unable to retrieve finalized head - returned genesis block"
                 );
@@ -87,19 +87,35 @@ export class BlockListener {
                 this.missingBlockFetchInitiated = true;
                 console.log("fetching missing")
                 const latestBlock = await this.storageProvider.get();
-                await this.fetchMissingBlockEventsAndExtrinsics(latestBlock, blockNumber - 1);
+                await this.fetchMissingBlockEventsAndExtrinsics(latestBlock, latestFinalisedBlockNum - 1);
                 this.missingBlockEventsFetched = true;
             }
 
-            this.fetchEventsAndExtrinsicsAtBlock(blockNumber);
+            this.fetchEventsAndExtrinsicsAtBlock(latestFinalisedBlockNum);
+
+            const latestSavedBlock = this.currentBlockNumber;
+            // Compare block sequence order to see if there's a skipped finalised block
+            if (
+                latestSavedBlock &&
+                latestSavedBlock + 1 < latestFinalisedBlockNum &&
+                this.missingBlockEventsFetched
+            ) {
+                // Fetch all the missing blocks
+                this.missingBlockEventsFetched = false;
+                await this.fetchMissingBlockEventsAndExtrinsics(
+                    latestSavedBlock,
+                    latestFinalisedBlockNum - 1
+                );
+                this.missingBlockEventsFetched = true;
+            }
+            this.currentBlockNumber = latestFinalisedBlockNum;
 
             // Update local db latestBlock
             if (
                 this.missingBlockEventsFetched
             ) {
                 try {
-                    if (this.currentBlockNumber < blockNumber) this.currentBlockNumber = blockNumber;
-                    await this.storageProvider.set(this.currentBlockNumber);
+                    await this.storageProvider.set(latestFinalisedBlockNum);
                 } catch (e: any) {
                     console.error(e);
                 }
